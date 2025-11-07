@@ -1,0 +1,154 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct Node {
+    int data;
+    struct Node *next;
+} Node;
+
+Node *createNode(int data) {
+    Node *newNode = (Node *)malloc(sizeof(Node));
+    newNode->data = data;
+    newNode->next = NULL;
+    return newNode;
+}
+
+Node *insertAtBeginning(Node *head, int data) {
+    Node *newNode = createNode(data);
+    newNode->next = head;
+    return newNode;
+}
+
+Node *insertAtEnd(Node *head, int data) {
+    Node *newNode = createNode(data);
+    if (head == NULL) return newNode;
+    
+    Node *current = head;
+    while (current->next != NULL) {
+        current = current->next;
+    }
+    current->next = newNode;
+    return head;
+}
+
+Node *insertAtPosition(Node *head, int data, int position) {
+    if (position == 1) return insertAtBeginning(head, data);
+    
+    Node *newNode = createNode(data);
+    Node *current = head;
+    
+    for (int i = 1; i < position - 1 && current != NULL; i++) {
+        current = current->next;
+    }
+    
+    if (current == NULL) {
+        printf("Position out of range.\n");
+        return head;
+    }
+    
+    newNode->next = current->next;
+    current->next = newNode;
+    return head;
+}
+
+Node *deleteAtBeginning(Node *head) {
+    if (head == NULL) return NULL;
+    Node *temp = head;
+    head = head->next;
+    free(temp);
+    return head;
+}
+
+Node *deleteAtEnd(Node *head) {
+    if (head == NULL) return NULL;
+    if (head->next == NULL) {
+        free(head);
+        return NULL;
+    }
+    
+    Node *current = head;
+    while (current->next->next != NULL) {
+        current = current->next;
+    }
+    free(current->next);
+    current->next = NULL;
+    return head;
+}
+
+Node *deleteAtPosition(Node *head, int position) {
+    if (position == 1) return deleteAtBeginning(head);
+    
+    Node *current = head;
+    for (int i = 1; i < position - 1 && current != NULL; i++) {
+        current = current->next;
+    }
+    
+    if (current == NULL || current->next == NULL) return head;
+    
+    Node *temp = current->next;
+    current->next = temp->next;
+    free(temp);
+    return head;
+}
+
+int search(Node *head, int data) {
+    Node *current = head;
+    int position = 1;
+    while (current != NULL) {
+        if (current->data == data) return position;
+        current = current->next;
+        position++;
+    }
+    return -1;
+}
+
+void display(Node *head) {
+    if (head == NULL) {
+        printf("List is empty.\n");
+        return;
+    }
+    Node *current = head;
+    printf("List: ");
+    while (current != NULL) {
+        printf("%d -> ", current->data);
+        current = current->next;
+    }
+    printf("NULL\n");
+}
+
+int main() {
+    Node *head = NULL;
+    
+    printf("=== Linked List All Operations ===\n\n");
+    
+    head = insertAtEnd(head, 10);
+    head = insertAtEnd(head, 20);
+    head = insertAtEnd(head, 30);
+    printf("After inserting 10, 20, 30:\n");
+    display(head);
+    
+    head = insertAtBeginning(head, 5);
+    printf("After inserting 5 at beginning:\n");
+    display(head);
+    
+    head = insertAtPosition(head, 15, 3);
+    printf("After inserting 15 at position 3:\n");
+    display(head);
+    
+    int pos = search(head, 20);
+    printf("Position of 20: %d\n\n", pos);
+    
+    head = deleteAtBeginning(head);
+    printf("After deleting at beginning:\n");
+    display(head);
+    
+    head = deleteAtEnd(head);
+    printf("After deleting at end:\n");
+    display(head);
+    
+    head = deleteAtPosition(head, 2);
+    printf("After deleting at position 2:\n");
+    display(head);
+    
+    return 0;
+}
